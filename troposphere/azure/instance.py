@@ -3,7 +3,7 @@
 #
 # See LICENSE file for full license.
 
-from . import AWSHelperFn, AWSObject, AWSProperty, Tags
+from . import AWSHelperFn, AWSObject, AWSProperty, tags, tags, AWSAttribute, AWSDeclaration
 from .validators import (
     boolean, exactly_one, integer, integer_range,
     network_port, positive_integer, vpn_pre_shared_key, vpn_tunnel_inside_cidr
@@ -37,7 +37,7 @@ class CustomerGateway(AWSObject):
     props = {
         'BgpAsn': (integer, True),
         'IpAddress': (basestring, True),
-        'Tags': ((Tags, list), False),
+        'tags': ((tags, list), False),
         'Type': (basestring, True),
     }
 
@@ -51,7 +51,7 @@ class DHCPOptions(AWSObject):
         'NetbiosNameServers': (list, False),
         'NetbiosNodeType': (integer, False),
         'NtpServers': (list, False),
-        'Tags': ((Tags, list), False),
+        'tags': ((tags, list), False),
     }
 
 
@@ -102,7 +102,7 @@ class NatGateway(AWSObject):
     props = {
             'AllocationId': (basestring, True),
             'SubnetId': (basestring, True),
-            'Tags': ((Tags, list), False),
+            'tags': ((tags, list), False),
     }
 
 
@@ -226,7 +226,7 @@ class Instance(AWSObject):
         'SsmAssociations': ([SsmAssociations], False),
         'SourceDestCheck': (boolean, False),
         'SubnetId': (basestring, False),
-        'Tags': ((Tags, list), False),
+        'tags': ((tags, list), False),
         'Tenancy': (basestring, False),
         'UserData': (basestring, False),
         'Volumes': (list, False),
@@ -237,7 +237,7 @@ class InternetGateway(AWSObject):
     resource_type = "AWS::EC2::InternetGateway"
 
     props = {
-        'Tags': ((Tags, list), False),
+        'tags': ((tags, list), False),
     }
 
 
@@ -245,7 +245,7 @@ class NetworkAcl(AWSObject):
     resource_type = "AWS::EC2::NetworkAcl"
 
     props = {
-        'Tags': ((Tags, list), False),
+        'tags': ((tags, list), False),
         'VpcId': (basestring, True),
     }
 
@@ -285,23 +285,6 @@ class NetworkAclEntry(AWSObject):
             'Ipv6CidrBlock',
         ]
         exactly_one(self.__class__.__name__, self.properties, conds)
-
-
-class NetworkInterface(AWSObject):
-    resource_type = "AWS::EC2::NetworkInterface"
-
-    props = {
-        'Description': (basestring, False),
-        'GroupSet': (list, False),
-        'Ipv6AddressCount': (integer, False),
-        'Ipv6Addresses': ([Ipv6Addresses], False),
-        'PrivateIpAddress': (basestring, False),
-        'PrivateIpAddresses': ([PrivateIpAddressSpecification], False),
-        'SecondaryPrivateIpAddressCount': (integer, False),
-        'SourceDestCheck': (boolean, False),
-        'SubnetId': (basestring, True),
-        'Tags': ((Tags, list), False),
-    }
 
 
 class NetworkInterfaceAttachment(AWSObject):
@@ -359,15 +342,6 @@ class Route(AWSObject):
         ]
         exactly_one(self.__class__.__name__, self.properties, cidr_conds)
         exactly_one(self.__class__.__name__, self.properties, gateway_conds)
-
-
-class RouteTable(AWSObject):
-    resource_type = "AWS::EC2::RouteTable"
-
-    props = {
-        'Tags': ((Tags, list), False),
-        'VpcId': (basestring, True),
-    }
 
 
 class SecurityGroupEgress(AWSObject):
@@ -445,19 +419,6 @@ class SecurityGroupRule(AWSProperty):
     }
 
 
-class SecurityGroup(AWSObject):
-    resource_type = "AWS::EC2::SecurityGroup"
-
-    props = {
-        'GroupName': (basestring, False),
-        'GroupDescription': (basestring, True),
-        'SecurityGroupEgress': (list, False),
-        'SecurityGroupIngress': (list, False),
-        'VpcId': (basestring, False),
-        'Tags': ((Tags, list), False),
-    }
-
-
 class Subnet(AWSObject):
     resource_type = "AWS::EC2::Subnet"
 
@@ -467,7 +428,7 @@ class Subnet(AWSObject):
         'CidrBlock': (basestring, True),
         'Ipv6CidrBlock': (basestring, False),
         'MapPublicIpOnLaunch': (boolean, False),
-        'Tags': ((Tags, list), False),
+        'tags': ((tags, list), False),
         'VpcId': (basestring, True),
     }
 
@@ -509,7 +470,7 @@ class Volume(AWSObject):
         'KmsKeyId': (basestring, False),
         'Size': (positive_integer, False),
         'SnapshotId': (basestring, False),
-        'Tags': ((Tags, list), False),
+        'tags': ((tags, list), False),
         'VolumeType': (basestring, False),
     }
 
@@ -532,7 +493,7 @@ class VPC(AWSObject):
         'EnableDnsSupport': (boolean, False),
         'EnableDnsHostnames': (boolean, False),
         'InstanceTenancy': (basestring, False),
-        'Tags': ((Tags, list), False),
+        'tags': ((tags, list), False),
     }
 
 
@@ -580,7 +541,7 @@ class VPNConnection(AWSObject):
         'Type': (basestring, True),
         'CustomerGatewayId': (basestring, True),
         'StaticRoutesOnly': (boolean, False),
-        'Tags': ((Tags, list), False),
+        'tags': ((tags, list), False),
         'VpnGatewayId': (basestring, True),
         'VpnTunnelOptionsSpecifications': (
             [VpnTunnelOptionsSpecification], False
@@ -603,7 +564,7 @@ class VPNGateway(AWSObject):
     props = {
         'AmazonSideAsn': (positive_integer, False),
         'Type': (basestring, True),
-        'Tags': ((Tags, list), False),
+        'tags': ((tags, list), False),
     }
 
 
@@ -622,7 +583,7 @@ class VPCPeeringConnection(AWSObject):
     props = {
         'PeerVpcId': (basestring, True),
         'VpcId': (basestring, True),
-        'Tags': ((Tags, list), False),
+        'tags': ((tags, list), False),
         'PeerOwnerId': (basestring, False),
         'PeerRoleArn': (basestring, False),
     }
@@ -731,4 +692,227 @@ class VPCCidrBlock(AWSObject):
         'AmazonProvidedIpv6CidrBlock': (boolean, False),
         'CidrBlock': (basestring, False),
         'VpcId': (basestring, True),
+    }
+
+
+class StorageAccount(AWSObject):
+    resource_type = "Microsoft.Storage/storageAccounts"
+
+    props = {
+        'accountType': (basestring, False),
+    }
+
+
+class PublicIpAddress(AWSObject):
+    resource_type = "Microsoft.Network/publicIPAddresses"
+
+    props = {
+        'publicIPAllocationMethod': (basestring, False),
+        'dnsSettings': (dict, False),
+    }
+
+
+class AzureSecurityRules(AWSObject):
+    props = {
+        'description': (basestring, False),
+        'protocol': (basestring, False),
+        'sourcePortRange': (basestring, False),
+        'destinationPortRange': (basestring, False),
+        'sourceAddressPrefix': (basestring, False),
+        'destinationAddressPrefix': (basestring, False),
+        'access': (basestring, False),
+        'direction': (basestring, False),
+        'priority': (integer, False),
+    }
+
+
+class SecurityGroup(AWSObject):
+    resource_type = "Microsoft.Network/networkSecurityGroups"
+
+    props = {
+        'securityRules': ([AzureSecurityRules], False),
+    }
+
+
+class RouteTableRoute(AWSObject):
+    props = {
+        'addressPrefix': (basestring, False),
+        'nextHopType': (basestring, False),
+        'nextHopIpAddress': (basestring, False),
+    }
+
+
+class RouteTable(AWSObject):
+    resource_type = "Microsoft.Network/routeTables"
+
+    props = {
+        'routes': ([RouteTableRoute], False),
+    }
+
+
+class VirtualNetSubnet(AWSObject):
+    props = {
+        'addressPrefix': (basestring, False),
+        'networkSecurityGroup': (dict, False),
+    }
+
+
+class VirtualNetwork(AWSObject):
+    resource_type = "Microsoft.Network/virtualNetworks"
+
+    props = {
+        'mode': (basestring, False),
+        'addressSpace': (dict, False),
+        'subnets': ([VirtualNetSubnet], False),
+    }
+
+
+class NetworkIntIpConfig(AWSProperty):
+    props = {
+        'privateIPAllocationMethod': (basestring, False),
+        'privateIPAddress': (basestring, False),
+        'subnet': (dict, False),
+    }
+
+
+class NetworkInterface(AWSObject):
+    resource_type = "Microsoft.Network/networkInterfaces"
+
+    props = {
+        'tags': (dict, False),
+        'enableIPForwarding': (basestring, False),
+        'ipConfigurations': ([NetworkIntIpConfig], False),
+    }
+
+
+class VirtualMachine(AWSObject):
+    resource_type = "Microsoft.Compute/virtualMachines"
+
+    props = {
+        'hardwareProfile': (dict, False),
+        'osProfile': (dict, False),
+        'storageProfile': (dict, False),
+        'networkProfile': (dict, False),
+    }
+
+
+class hardwareProfile(AWSProperty):
+    props = {
+        'vmSize': (basestring, False),
+    }
+
+
+class osProfile(AWSProperty):
+    props = {
+        'computername': (basestring, False),
+        'adminUsername': (basestring, False),
+        'adminPassword': (basestring, False),
+    }
+
+
+class storageProfile(AWSProperty):
+    props = {
+        'imageReference': (dict, False),
+        'osDisk': (dict, False),
+    }
+
+
+class networkProfile(AWSProperty):
+    props = {
+        'networkInterfaces': (list, False),
+    }
+
+
+class imageReference(AWSProperty):
+    props = {
+        'publisher': (basestring, False),
+        'offer': (basestring, False),
+        'sku': (basestring, False),
+        'version': (basestring, False),
+    }
+
+
+class osDisk(AWSProperty):
+    props = {
+        'name': (basestring, False),
+        'vhd': (dict, False),
+        'caching': (basestring, False),
+        'createOption': (basestring, False),
+    }
+
+
+class networkInterfaces(AWSProperty):
+    props = {
+        'id': (basestring, False),
+        'properties': (basestring, False),
+    }
+
+
+class vhd(AWSProperty):
+    props = {
+        'uri': (basestring, False),
+    }
+
+
+class VirtualMachineExtension(AWSObject):
+    resource_type = "Microsoft.Compute/virtualMachines/extensions"
+
+    props = {
+        'publisher': (basestring, False),
+        'type': (basestring, False),
+        'typeHandlerVersion': (basestring, False),
+        'settings': (dict, False),
+    }
+
+
+class settings(AWSProperty):
+    props = {
+        'fileUris': (list, False),
+        'commandToExecute': (basestring, False),
+    }
+
+
+class ResourceDeploymentRouteTable(AWSObject):
+    props = {
+        'id': (basestring, False),
+    }
+
+
+class ResourceDeploymentResource(AWSProperty):
+    resource_type = "Microsoft.Network/virtualNetworks/subnets"
+    props = {
+        'mode': (basestring, False),
+        'addressPrefix': (basestring, False),
+        'routeTable': (dict, False),
+    }
+
+
+class ResourceDeploymentTemplate(AWSProperty):
+    props = {
+        '$' + 'schema': (basestring, False),
+        'contentVersion': (basestring, False),
+        'resources': ([ResourceDeploymentResource], False),
+    }
+
+
+class ResourceDeployment(AWSObject):
+    resource_type = "Microsoft.Resources/deployments"
+
+    props = {
+        'mode': (basestring, False),
+        'template': (dict, False),
+    }
+
+
+class properties(AWSProperty):
+    props = {
+        'privateIPAllocationMethod': (basestring, False),
+        'privateIPAddress': (basestring, False),
+        'publicIPAddress': (dict, False),
+    }
+
+
+class publicIPAddress(AWSProperty):
+    props = {
+        'id': (basestring, False),
     }
