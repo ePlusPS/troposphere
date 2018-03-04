@@ -15,7 +15,7 @@ setup(
     author_email="mark@peek.org",
     url="https://github.com/cloudtools/troposphere",
     license="New BSD license",
-    packages=['troposphere', 'troposphere.openstack', 'troposphere.helpers'],
+    packages=['troposphere', 'troposphere.openstack', 'troposphere.helpers', 'troposphere.azure'],
     scripts=['scripts/cfn', 'scripts/cfn2py'],
     install_requires=["cfn_flip>=0.2.5"],
     test_suite="tests",
