@@ -3,7 +3,7 @@
 #
 # See LICENSE file for full license.
 
-from . import AWSHelperFn, AWSObject, AWSProperty, tags, tags, AWSAttribute, AWSDeclaration
+from . import AWSHelperFn, AWSObject, AzureObject, AWSProperty, Tags
 from .validators import (
     boolean, exactly_one, integer, integer_range,
     network_port, positive_integer, vpn_pre_shared_key, vpn_tunnel_inside_cidr
@@ -37,7 +37,7 @@ class CustomerGateway(AWSObject):
     props = {
         'BgpAsn': (integer, True),
         'IpAddress': (basestring, True),
-        'tags': ((tags, list), False),
+        'Tags': ((Tags, list), False),
         'Type': (basestring, True),
     }
 
@@ -51,7 +51,7 @@ class DHCPOptions(AWSObject):
         'NetbiosNameServers': (list, False),
         'NetbiosNodeType': (integer, False),
         'NtpServers': (list, False),
-        'tags': ((tags, list), False),
+        'Tags': ((Tags, list), False),
     }
 
 
@@ -102,7 +102,7 @@ class NatGateway(AWSObject):
     props = {
             'AllocationId': (basestring, True),
             'SubnetId': (basestring, True),
-            'tags': ((tags, list), False),
+            'Tags': ((Tags, list), False),
     }
 
 
@@ -226,7 +226,7 @@ class Instance(AWSObject):
         'SsmAssociations': ([SsmAssociations], False),
         'SourceDestCheck': (boolean, False),
         'SubnetId': (basestring, False),
-        'tags': ((tags, list), False),
+        'Tags': ((Tags, list), False),
         'Tenancy': (basestring, False),
         'UserData': (basestring, False),
         'Volumes': (list, False),
@@ -237,7 +237,7 @@ class InternetGateway(AWSObject):
     resource_type = "AWS::EC2::InternetGateway"
 
     props = {
-        'tags': ((tags, list), False),
+        'Tags': ((Tags, list), False),
     }
 
 
@@ -245,7 +245,7 @@ class NetworkAcl(AWSObject):
     resource_type = "AWS::EC2::NetworkAcl"
 
     props = {
-        'tags': ((tags, list), False),
+        'Tags': ((Tags, list), False),
         'VpcId': (basestring, True),
     }
 
@@ -428,7 +428,7 @@ class Subnet(AWSObject):
         'CidrBlock': (basestring, True),
         'Ipv6CidrBlock': (basestring, False),
         'MapPublicIpOnLaunch': (boolean, False),
-        'tags': ((tags, list), False),
+        'Tags': ((Tags, list), False),
         'VpcId': (basestring, True),
     }
 
@@ -470,7 +470,7 @@ class Volume(AWSObject):
         'KmsKeyId': (basestring, False),
         'Size': (positive_integer, False),
         'SnapshotId': (basestring, False),
-        'tags': ((tags, list), False),
+        'Tags': ((Tags, list), False),
         'VolumeType': (basestring, False),
     }
 
@@ -493,7 +493,7 @@ class VPC(AWSObject):
         'EnableDnsSupport': (boolean, False),
         'EnableDnsHostnames': (boolean, False),
         'InstanceTenancy': (basestring, False),
-        'tags': ((tags, list), False),
+        'Tags': ((Tags, list), False),
     }
 
 
@@ -541,7 +541,7 @@ class VPNConnection(AWSObject):
         'Type': (basestring, True),
         'CustomerGatewayId': (basestring, True),
         'StaticRoutesOnly': (boolean, False),
-        'tags': ((tags, list), False),
+        'Tags': ((Tags, list), False),
         'VpnGatewayId': (basestring, True),
         'VpnTunnelOptionsSpecifications': (
             [VpnTunnelOptionsSpecification], False
@@ -564,7 +564,7 @@ class VPNGateway(AWSObject):
     props = {
         'AmazonSideAsn': (positive_integer, False),
         'Type': (basestring, True),
-        'tags': ((tags, list), False),
+        'Tags': ((Tags, list), False),
     }
 
 
@@ -583,7 +583,7 @@ class VPCPeeringConnection(AWSObject):
     props = {
         'PeerVpcId': (basestring, True),
         'VpcId': (basestring, True),
-        'tags': ((tags, list), False),
+        'Tags': ((Tags, list), False),
         'PeerOwnerId': (basestring, False),
         'PeerRoleArn': (basestring, False),
     }
@@ -767,11 +767,22 @@ class VirtualNetwork(AWSObject):
     }
 
 
-class NetworkIntIpConfig(AWSProperty):
+class AzureProp(AWSProperty):
     props = {
         'privateIPAllocationMethod': (basestring, False),
         'privateIPAddress': (basestring, False),
         'subnet': (dict, False),
+        'publicIPAddress': (dict, False),
+    }
+
+
+class NetworkIntIpConfig(AzureObject):
+    props = {
+        'name': (basestring, False),
+        'privateIPAllocationMethod': (basestring, False),
+        'privateIPAddress': (basestring, False),
+        'subnet': (dict, False),
+        'publicIPAddress': (dict, False),
     }
 
 

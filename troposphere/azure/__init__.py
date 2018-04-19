@@ -98,7 +98,7 @@ class BaseAWSObject(object):
                            'Metadata', 'UpdatePolicy',
                            'Condition', 'CreationPolicy',
                            'apiVersion', 'name', 'dependsOn', 'location',
-                           'comments', 'plan']
+                           'comments', 'plan', 'tags']
 
         # try to validate the title if its there
         if self.title:
@@ -244,7 +244,7 @@ class BaseAWSObject(object):
         elif hasattr(self, 'resource_type'):
             d = {}
             for k, v in self.resource.items():
-                if k != 'properties':
+                # if k != 'properties':
                     d[k] = v
             return d
         else:
@@ -305,6 +305,20 @@ class BaseAWSObject(object):
 
 
 class AWSObject(BaseAWSObject):
+    dictname = 'properties'
+
+    def ref(self):
+        return Ref(self)
+
+    Ref = ref
+
+    def get_att(self, value):
+        return GetAtt(self, value)
+
+    GetAtt = get_att
+
+
+class AzureObject(BaseAWSObject):
     dictname = 'properties'
 
     def ref(self):
@@ -496,10 +510,8 @@ class ImportValue(AWSHelperFn):
         self.data = {'Fn::ImportValue': data}
 
 
-class tags(AWSHelperFn):
+class Tags(AWSHelperFn):
     def __init__(self, *args, **kwargs):
-        import pdb
-        pdb.set_trace()
         if not args:
             # Assume kwargs variant
             tag_dict = kwargs
@@ -512,7 +524,7 @@ class tags(AWSHelperFn):
                 raise(TypeError, "tags needs to be either kwargs or dict")
             tag_dict = args[0]
 
-        self.tags = {} 
+        self.tags = {}
         for k, v in sorted(tag_dict.iteritems()):
             self.tags[k] = v
 
@@ -551,6 +563,7 @@ class Template(object):
         self.variables = {}
         self.version = None
         self.transform = None
+        self.schema = None
 
     def add_description(self, description):
         self.description = description
@@ -578,10 +591,22 @@ class Template(object):
             res.append(values)
         return values
 
+    def _output_update(self, d, values):
+        if isinstance(values, list):
+            for v in values:
+                if v.title in d:
+                    self.handle_duplicate_key(v.title)
+                d[v.title] = v
+        else:
+            if values.title in d:
+                self.handle_duplicate_key(values.title)
+            d[values.title] = values
+        return values
+
     def add_output(self, output):
         if len(self.outputs) >= MAX_OUTPUTS:
             raise ValueError('Maximum outputs %d reached' % MAX_OUTPUTS)
-        return self._update(self.outputs, output)
+        return self._output_update(self.outputs, output)
 
     def add_mapping(self, name, mapping):
         if len(self.mappings) >= MAX_MAPPINGS:
@@ -618,6 +643,9 @@ class Template(object):
     def add_transform(self, transform):
         self.transform = transform
 
+    def add_schema(self, schema):
+        self.schema = schema
+
     def to_dict(self):
         t = {}
         if self.description:
@@ -629,7 +657,7 @@ class Template(object):
         if self.mappings:
             t['Mappings'] = self.mappings
         if self.outputs:
-            t['Outputs'] = self.outputs
+            t['outputs'] = self.outputs
         if self.parameters:
             t['Parameters'] = self.parameters
         if self.azure_parameters:
@@ -637,9 +665,11 @@ class Template(object):
         if self.variables:
             t['variables'] = self.variables
         if self.version:
-            t['AWSTemplateFormatVersion'] = self.version
+            t['contentVersion'] = self.version
         if self.transform:
             t['Transform'] = self.transform
+        if self.schema:
+            t['$schema'] = self.schema
         t['resources'] = self.resources
 
         return encode_to_dict(t)
@@ -663,7 +693,8 @@ class Output(AWSDeclaration):
     props = {
         'Description': (basestring, False),
         'Export': (Export, False),
-        'Value': (basestring, True),
+        'value': (basestring, True),
+        'type': (basestring, True),
     }
 
 
